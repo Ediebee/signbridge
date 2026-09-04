@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#0b8ef3"/>
+<title>SignBridge Prototype</title>
+<style>
+:root{
+  --blue:#0b8ef3; --blue2:#4fb8ff; --teal:#12b7a3; --pink:#ff6f9f;
+  --ink:#12324a; --muted:#6a8192; --bg:#f5fbff; --card:#fff;
+  --line:#dfeaf1; --soft:#eaf6ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:linear-gradient(180deg,#dff6ff,#f7fbff 30%,#ffffff);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
+body{min-height:100vh}
+.app{max-width:460px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 40px rgba(30,80,100,.15);position:relative;padding-bottom:86px}
+header{padding:18px 20px 10px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:28px;font-weight:800;letter-spacing:-.8px}
+.brand span{color:var(--blue)}
+.screen{display:none;padding:10px 18px 24px}
+.screen.active{display:block}
+.hero{padding:16px 2px 4px}
+.logo{width:82px;height:82px;border-radius:28px;margin:0 auto 12px;background:linear-gradient(135deg,var(--blue),var(--blue2) 48%,var(--pink) 50%,#ff9bb8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:40px}
+h1,h2,h3,p{margin-top:0}
+h1{text-align:center;font-size:35px;margin-bottom:4px}
+.tagline{text-align:center;color:var(--blue);font-weight:600;margin-bottom:22px}
+.choice{border-radius:24px;padding:22px 20px;margin:12px 0;color:#fff;display:flex;align-items:center;gap:15px;cursor:pointer}
+.choice.blue{background:linear-gradient(135deg,var(--blue),#229df5)}
+.choice.teal{background:linear-gradient(135deg,#19b9a9,#079d8f)}
+.choice .icon{font-size:42px;min-width:48px}
+.choice .title{font-size:23px;font-weight:750}
+.choice .sub{opacity:.93;font-size:14px;margin-top:5px}
+.row{display:flex;gap:12px}
+.row>*{flex:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 6px 18px rgba(18,50,74,.06)}
+textarea{width:100%;min-height:170px;border:1px solid var(--line);border-radius:18px;padding:16px;font-size:22px;resize:none;outline:none}
+textarea:focus{border-color:var(--blue)}
+.btn{border:0;border-radius:18px;padding:15px 18px;font-size:17px;font-weight:700;cursor:pointer;background:#eef6fb;color:var(--ink)}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.teal{background:var(--teal);color:#fff}
+.btn.small{padding:10px 14px;font-size:14px}
+.btn.circle{width:58px;height:58px;border-radius:50%;font-size:24px;padding:0}
+.quick{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.chip{background:#eef7fc;border-radius:999px;padding:10px 14px;font-size:14px;cursor:pointer}
+.avatar{height:360px;border-radius:24px;background:linear-gradient(180deg,#badff2,#d6e9f4 72%,#243c4c 72%);position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.person{font-size:180px;line-height:1;filter:saturate(.9);transform:translateY(4px)}
+.caption{position:absolute;bottom:0;left:0;right:0;background:rgba(18,50,74,.86);color:#fff;padding:13px 16px;text-align:center;font-size:16px}
+.progress{height:6px;background:#e3edf4;border-radius:99px;overflow:hidden;margin:16px 0 6px}
+.progress>div{height:100%;width:0;background:var(--blue);transition:width .15s linear}
+.controls{display:flex;justify-content:center;gap:18px;margin-top:14px}
+.control{text-align:center;font-size:12px;color:var(--muted)}
+.control button{display:block;margin:0 auto 5px}
+.list{display:flex;flex-direction:column;gap:10px}
+.item{padding:15px 14px;border-radius:16px;background:#f6fbfe;border:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}
+.item .emoji{font-size:22px}
+.item .text{flex:1}
+.empty{color:var(--muted);text-align:center;padding:26px 10px}
+.camera{height:390px;border-radius:26px;background:radial-gradient(circle at 50% 25%,#dbe9f1,#758894);display:flex;align-items:center;justify-content:center;position:relative;color:#fff;overflow:hidden}
+.camera .silhouette{font-size:170px}
+.corner{position:absolute;width:34px;height:34px;border-color:#fff;border-style:solid}
+.c1{top:18px;left:18px;border-width:4px 0 0 4px;border-radius:10px 0 0 0}
+.c2{top:18px;right:18px;border-width:4px 4px 0 0;border-radius:0 10px 0 0}
+.c3{bottom:18px;left:18px;border-width:0 0 4px 4px;border-radius:0 0 0 10px}
+.c4{bottom:18px;right:18px;border-width:0 4px 4px 0;border-radius:0 0 10px 0}
+.result{font-size:23px;background:#ecf8ff;border-radius:18px;padding:18px;margin:14px 0}
+.section-title{font-size:14px;color:var(--muted);text-transform:uppercase;font-weight:800;letter-spacing:.7px;margin:18px 2px 9px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:460px;width:100%;height:78px;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;z-index:9;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{flex:1;border:0;background:transparent;color:#718595;font-size:12px;font-weight:650;cursor:pointer}
+.nav .ico{display:block;font-size:21px;margin-bottom:3px}
+.nav button.active{color:var(--blue)}
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.back{border:0;background:none;font-size:26px;cursor:pointer}
+.topbar h2{margin:0;font-size:23px}
+.notice{background:#fff7da;border:1px solid #f5dc7c;border-radius:14px;padding:11px 12px;font-size:12px;color:#705c15;margin-top:14px}
+.toggle{display:flex;gap:8px;background:#eef6fb;padding:5px;border-radius:16px;margin-bottom:12px}
+.toggle button{flex:1;border:0;border-radius:12px;padding:10px;background:transparent;font-weight:700}
+.toggle button.on{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+footer.note{font-size:12px;color:var(--muted);text-align:center;padding:10px 20px 24px}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">Sign<span>Bridge</span></div>
+  <button class="btn small" onclick="go('settings')">⚙️</button>
+</header>
+
+<section id="home" class="screen active">
+  <div class="hero">
+    <div class="logo">🤟</div>
+    <h1>SignBridge</h1>
+    <div class="tagline">Communication Without Limits</div>
+  </div>
+  <div class="choice blue" onclick="go('say')">
+    <div class="icon">💬</div><div><div class="title">I want to say something</div><div class="sub">Type or speak and see it prepared for ASL playback</div></div>
+  </div>
+  <div class="choice teal" onclick="go('sign')">
+    <div class="icon">✋</div><div><div class="title">I want to sign something</div><div class="sub">Prototype camera flow for signing back</div></div>
+  </div>
+  <div class="row" style="margin-top:16px">
+    <button class="btn" onclick="go('favorites')">❤️ Favorites</button>
+    <button class="btn" onclick="go('learn')">📘 Learn ASL</button>
+  </div>
+  <div class="notice"><b>Prototype note:</b> This version demonstrates the app experience. Real ASL translation/video requires a licensed ASL service or original sign library before public release.</div>
+</section>
+
+<section id="say" class="screen">
+  <div class="topbar"><button class="back" onclick="go('home')">‹</button><h2>Type or Speak</h2></div>
+  <textarea id="message" placeholder="Type a message…">Do you want to go to the store with me?</textarea>
+  <div class="row" style="margin-top:12px">
+    <button class="btn" id="micBtn" onclick="startMic()">🎤 Tap to Speak</button>
+    <button class="btn primary" onclick="translateMessage()">Translate ›</button>
+  </div>
+  <div class="section-title">Quick phrases</div>
+  <div class="quick">
+    <div class="chip" onclick="setPhrase('Hi')">Hi</div>
+    <div class="chip" onclick="setPhrase('Thank you')">Thank you</div>
+    <div class="chip" onclick="setPhrase('I love you')">I love you</div>
+    <div class="chip" onclick="setPhrase('Yes')">Yes</div>
+    <div class="chip" onclick="setPhrase('No')">No</div>
+    <div class="chip" onclick="setPhrase(`I'm proud of you`)">I'm proud of you</div>
+    <div class="chip" onclick="setPhrase(`Let's go`)">Let's go</div>
+    <div class="chip" onclick="setPhrase('Do you need anything?')">Do you need anything?</div>
+  </div>
+</section>
+
+<section id="playback" class="screen">
+  <div class="topbar"><button class="back" onclick="go('say')">‹</button><h2>Your ASL Translation</h2></div>
+  <div class="avatar">
+    <div class="person" id="avatarPerson">🧑🏻‍🦰</div>
+    <div class="caption" id="caption"></div>
+  </div>
+  <div class="progress"><div id="bar"></div></div>
+  <div style="display:flex;justify-content:space-between;color:var(--muted);font-size:12px"><span>0:00</span><span id="duration">0:05</span></div>
+  <div class="controls">
+    <div class="control"><button class="btn circle" onclick="setSpeed(.55)">🐢</button>Slower</div>
+    <div class="control"><button class="btn circle primary" onclick="playSign()">▶️</button>Play</div>
+    <div class="control"><button class="btn circle" onclick="replay()">↻</button>Replay</div>
+  </div>
+  <div class="row" style="margin-top:18px">
+    <button class="btn" onclick="saveFavorite()">⭐ Save Favorite</button>
+    <button class="btn" onclick="shareText()">↗ Share</button>
+  </div>
+  <div class="notice">For now, the avatar animation is a visual placeholder so you can test the user flow. It does <b>not</b> represent actual ASL signs yet.</div>
+</section>
+
+<section id="sign" class="screen">
+  <div class="topbar"><button class="back" onclick="go('home')">‹</button><h2>Sign to Me</h2></div>
+  <div class="camera">
+    <span class="silhouette">🧒🏻</span>
+    <i class="corner c1"></i><i class="corner c2"></i><i class="corner c3"></i><i class="corner c4"></i>
+  </div>
+  <button class="btn teal" style="width:100%;margin-top:14px" onclick="simulateSign()">🔴 Tap to Start Signing</button>
+  <div class="result" id="signResult" style="display:none"></div>
+  <div class="row" id="signActions" style="display:none">
+    <button class="btn" onclick="readSignResult()">🔊 Read Aloud</button>
+    <button class="btn" onclick="copyResult()">📋 Copy Text</button>
+  </div>
+  <div class="notice">Camera sign recognition is simulated in this prototype. A commercial version would need a trained ASL recognition service and Deaf/ASL expert validation.</div>
+</section>
+
+<section id="favorites" class="screen">
+  <div class="topbar"><button class="back" onclick="go('home')">‹</button><h2>Favorites</h2></div>
+  <div id="favoriteList" class="list"></div>
+</section>
+
+<section id="learn" class="screen">
+  <div class="topbar"><button class="back" onclick="go('home')">‹</button><h2>Learn ASL</h2></div>
+  <div class="card">
+    <input id="learnSearch" placeholder="Search signs, e.g. food, family, hello" oninput="renderLearn()" style="width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);font-size:15px"/>
+  </div>
+  <div id="learnGrid" class="row" style="flex-wrap:wrap;margin-top:12px"></div>
+</section>
+
+<section id="settings" class="screen">
+  <div class="topbar"><button class="back" onclick="go('home')">‹</button><h2>Settings</h2></div>
+  <div class="list">
+    <div class="item"><span class="emoji">👤</span><div class="text"><b>Profile</b><br><small>Name and preferences</small></div><span>›</span></div>
+    <div class="item"><span class="emoji">▶️</span><div class="text"><b>Video Settings</b><br><small>Playback speed and avatar style</small></div><span>›</span></div>
+    <div class="item"><span class="emoji">🌐</span><div class="text"><b>Language</b><br><small>English ↔ ASL</small></div><span>›</span></div>
+    <div class="item"><span class="emoji">🌙</span><div class="text"><b>Display</b><br><small>Light mode prototype</small></div><span>›</span></div>
+    <div class="item"><span class="emoji">❓</span><div class="text"><b>Help & Support</b><br><small>Accessibility and support</small></div><span>›</span></div>
+  </div>
+  <div class="card" style="margin-top:18px;text-align:center">“A more connected world starts with understanding. 💗”</div>
+</section>
+
+<nav class="nav">
+  <button data-target="home" class="active" onclick="go('home')"><span class="ico">⌂</span>Home</button>
+  <button data-target="favorites" onclick="go('favorites')"><span class="ico">♥</span>Favorites</button>
+  <button data-target="learn" onclick="go('learn')"><span class="ico">▣</span>Learn</button>
+  <button data-target="settings" onclick="go('settings')"><span class="ico">⚙</span>Settings</button>
+</nav>
+</div>
+<footer class="note">SignBridge prototype • Built for testing the product concept</footer>
+
+<script>
+let currentMessage = "";
+let progressTimer = null;
+let speed = 1;
+const defaultFavorites = ["I love you","Hi","Do you want to go to the store with me?","It's time to eat","Let's go home","Are you okay?","Good job","Good night"];
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active', b.dataset.target===id));
+  if(id==='favorites') renderFavorites();
+  if(id==='learn') renderLearn();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function setPhrase(t){ document.getElementById('message').value=t; }
+function translateMessage(){
+  const t=document.getElementById('message').value.trim();
+  if(!t){ alert('Type or speak a message first.'); return; }
+  currentMessage=t;
+  document.getElementById('caption').textContent=t;
+  document.getElementById('duration').textContent='0:0'+Math.min(9,Math.max(3,Math.ceil(t.length/12)));
+  go('playback'); playSign();
+}
+function playSign(){
+  clearInterval(progressTimer);
+  let p=0;
+  const bar=document.getElementById('bar');
+  const person=document.getElementById('avatarPerson');
+  bar.style.width='0%';
+  progressTimer=setInterval(()=>{
+    p += 2.4*speed;
+    bar.style.width=Math.min(100,p)+'%';
+    const phase=Math.floor(p/8)%4;
+    person.style.transform=`translateY(4px) rotate(${phase===1?'-2deg':phase===3?'2deg':'0deg'}) scale(${phase===2?'1.015':'1'})`;
+    if(p>=100){clearInterval(progressTimer);person.style.transform='translateY(4px)'}
+  },110);
+}
+function replay(){ speed=1; playSign(); }
+function setSpeed(v){ speed=v; playSign(); }
+function getFavs(){ return JSON.parse(localStorage.getItem('signbridgeFavs')||'null') || defaultFavorites.slice(); }
+function saveFavorite(){
+  if(!currentMessage) return;
+  let f=getFavs();
+  if(!f.includes(currentMessage)) f.unshift(currentMessage);
+  localStorage.setItem('signbridgeFavs',JSON.stringify(f));
+  alert('Saved to Favorites');
+}
+function renderFavorites(){
+  const box=document.getElementById('favoriteList');
+  const f=getFavs();
+  if(!f.length){ box.innerHTML='<div class="empty">No favorites yet.</div>'; return; }
+  box.innerHTML=f.map((x,i)=>`<div class="item" onclick="useFavorite(${i})"><span class="emoji">${['💗','👋','🛒','🍴','🏠','🙂','👍','🌙'][i%8]}</span><div class="text">${escapeHtml(x)}</div><span>›</span></div>`).join('');
+}
+function useFavorite(i){ const f=getFavs(); document.getElementById('message').value=f[i]; currentMessage=f[i]; document.getElementById('caption').textContent=f[i]; go('playback'); playSign(); }
+function escapeHtml(s){ return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function simulateSign(){
+  const samples=["I want to go to the store with you.","I'm hungry.","Can we watch a movie?","I love you.","Can you help me?"];
+  const txt=samples[Math.floor(Math.random()*samples.length)];
+  setTimeout(()=>{
+    document.getElementById('signResult').style.display='block';
+    document.getElementById('signActions').style.display='flex';
+    document.getElementById('signResult').textContent=txt;
+  },500);
+}
+function readSignResult(){
+  const t=document.getElementById('signResult').textContent;
+  if('speechSynthesis' in window){speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(t));}
+  else alert(t);
+}
+function copyResult(){
+  const t=document.getElementById('signResult').textContent;
+  navigator.clipboard?.writeText(t); alert('Copied');
+}
+function shareText(){
+  const text=currentMessage||document.getElementById('caption').textContent;
+  if(navigator.share) navigator.share({title:'SignBridge message',text});
+  else navigator.clipboard?.writeText(text).then(()=>alert('Message copied'));
+}
+function startMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ alert('Speech recognition is not available in this browser. Typing still works.'); return; }
+  const r=new SR(); r.lang='en-US'; r.interimResults=false; r.maxAlternatives=1;
+  const b=document.getElementById('micBtn'); b.textContent='🎤 Listening…';
+  r.onresult=e=>{document.getElementById('message').value=e.results[0][0].transcript; b.textContent='🎤 Tap to Speak';}
+  r.onerror=()=>b.textContent='🎤 Tap to Speak';
+  r.onend=()=>b.textContent='🎤 Tap to Speak';
+  r.start();
+}
+const learnItems=[
+  ['👋','Basics','Common words'],['👨‍👩‍👧','Family','People & relationships'],['🍎','Food & Drinks','Meals and snacks'],
+  ['🚗','Places','Home, school, store'],['📅','Daily Life','Routines and activities'],['💗','Emotions','Feelings and expressions']
+];
+function renderLearn(){
+  const q=(document.getElementById('learnSearch')?.value||'').toLowerCase();
+  const items=learnItems.filter(x=>(x[1]+' '+x[2]).toLowerCase().includes(q));
+  document.getElementById('learnGrid').innerHTML=items.map(x=>`<div class="card" style="min-width:45%;text-align:center"><div style="font-size:42px">${x[0]}</div><b>${x[1]}</b><br><small>${x[2]}</small></div>`).join('');
+}
+renderFavorites(); renderLearn();
+</script>
+</body>
+</html>
